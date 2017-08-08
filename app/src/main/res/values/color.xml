@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="color_F50">#F50</color>
+    <color name="color_888">#888</color>
+    <color name="color_FFF">#FFF</color>
+    <color name="color_000">#000</color>
+    <color name="color_222">#222</color>
+    <color name="color_00F">#00F</color>
+    
+    <color name="diliver">#DDD</color>
+    <color name="color_darkerF50">#d24803</color>
+    <color name="color_myFav">#FFA500</color>
+    
+</resources>

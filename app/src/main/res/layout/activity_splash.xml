@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+    <!--contentDescription,手机通过设置后，运行到此可读出内容，为视力障碍者提供方便-->
+    <view.AlphaImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:contentDescription="@string/string_splash_view"
+        android:src="@drawable/s2"
+        android:scaleType="fitXY"
+        />
+
+</LinearLayout>

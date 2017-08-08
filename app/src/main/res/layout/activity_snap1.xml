@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:id="@+id/button_two"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_alignParentTop="true"
+        >
+
+        <Button
+            android:id="@+id/btn_take_pic"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_btn_selector"
+            android:text="@string/string_take_pic"
+            android:textColor="#fff" />
+        <Button
+            android:id="@+id/btn_match"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_weight="1"
+            android:layout_margin="10dp"
+            android:background="@drawable/bg_btn_selector"
+            android:text="@string/string_pipei"
+            android:textColor="#fff" />
+
+    </LinearLayout>
+    <ImageView
+                android:id="@+id/camera_view1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:src = "@drawable/leaf"
+        android:layout_below="@id/button_two"/>
+
+
+        <ListView
+            android:id="@+id/lv_find_result"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:divider="#fff"
+            android:dividerHeight="1dp" />
+
+</RelativeLayout>

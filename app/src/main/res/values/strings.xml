@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">叶片识别</string>
+    <string name = "picImage"> 植物图片</string>>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">snap</string>
+    <string name="string_main_home">首页</string>
+    <string name="string_home">home</string>
+    <string name="string_browse">browse</string>
+    <string name="string_collection">collection</string>
+    <string name="string_option">option</string>
+    <string name="string_snap">snap</string>
+    <string name="string_optimistic">确定</string>
+    <string name="string_negative">取消</string>
+    <string name="string_take_pic">拍照</string>
+    <string name="string_take_pic_cancle">取消</string>
+    <string name="string_file_name">文件名</string>
+    <string name="string_please_name_this_pic">请命名该图片</string>
+    <string name="string_demo">demo</string>
+    <string name="string_em_handler">EM处理</string>
+    <string name="string_resize">缩放</string>
+    <string name="select_from_pics">从相册选择</string>
+    <string name="string_pengzhang">膨胀处理</string>
+    <string name="string_tophat">顶帽处理</string>
+    <string name="string_contours">轮廓</string>
+    <string name="cur_histograms">曲率直方图</string>
+    <string name="string_curv_img">曲率灰度图像</string>
+    <string name="string_database">加入数据库</string>
+    <string name="string_add_plants">添加植物</string>
+    <string name="string_plant_name">植   物  名:</string>
+    <string name="string_please_input_name">请输入植物名</string>
+    <string name="string_plant_desc">植物描述:</string>
+    <string name="please_input_plant_desc">请输入植物描述</string>
+    <string name="string_choose_more_leaf">选择更多图片</string>
+    <string name="string_which">匹配树叶</string>
+    <string name="string_result">匹配结果</string>
+    <string name="_result_">测试Result界面</string>
+    <string name="string_sim">相似度:</string>
+    <string name="string_desc">简介:</string>
+    <string name="string_identity_check">修改数据库需要您身份验证</string>
+    <string name="username">用户名：</string>
+    <string name="password">密      码:</string>
+    <string name="string_all_samples">全部样本</string>
+    <string name="string_change_plant_info">修改植物信息</string>
+    <string name="string_rephoto">重拍</string>
+    <string name="string_modified_last_time">上次修改时间:</string>
+    <string name="string_samples">作为样本</string>
+    <string name="string_pipei">匹配植物</string>
+    <string name="string_please_place_pic_inside_red_rec">请尽量将树叶填充于红色方框内</string>
+    <string name = "string_splash_view">加载启动动画</string>
+    <string name = "string_change_plant">修改植物信息</string>
+    <string name="picture">Picture</string>
+    <string name="description_info">Info</string>
+    <string name="request_permission">This sample needs camera permission and write external storage permission.</string>
+    <string name="camera_error">This device doesn\'t support Camera2 API.</string>
+    <string name = "put_leaf">请尽量将树叶放于红色框内</string>
+    <string name = "intro_message"> camera2 API </string>
+    <string name = "match_plant"> 识别植物 </string>
+
+</resources>
