@@ -68,7 +68,7 @@ import beans.Plant;
 import tools.Tools;
 import tools.WhoDBAdapter;
 
-public class SnapActivity extends Activity {
+public class SnapActivity extends AppCompatActivity {
 
 	private static final String TAG = "SnapActivity";
 	protected static final int GET_TOP_PLANTS_LISTS_SUCCESS = 0x123;
@@ -78,54 +78,9 @@ public class SnapActivity extends Activity {
 	ListView resultList;
 	private AlertDialog mAlertDialog;
 	private Uri imageUri;
-
+	private String imagePath;
 	private Button bt_take_photo, bt_match;
 	private ImageView imageView;
-
-	private static final int PERMISSION_READ_EXTERNAL_STORAGE = 101;
-	private static final int PERMISSION_WRITE_EXTERNAL_STORAGE = 102;
-	private static final int PERMISSION_CAMERA = 103;
-	public void requestPermission() {
-
-		List<String> permissionsNeeded = new ArrayList<String>();
-
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_DENIED) {
-			permissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-		}
-		if(permissionsNeeded.size()>0){
-			System.out.println("申请权限");
-			ActivityCompat.requestPermissions(this, permissionsNeeded.toArray(new String[permissionsNeeded.size()]), 1);
-		}else{
-			takePhotoDirectly();
-		}
-	}
-
-	@Override
-	public void onRequestPermissionsResult(int requestCode, String permissions[], int []grantResults) {
-		switch (requestCode) {
-			case 1: {
-				System.out.println("grantResults.length = " + grantResults.length);
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-				{
-					takePhotoDirectly();
-
-
-				} else {
-					Toast.makeText(this, "权限未开启，需手动开启",Toast.LENGTH_LONG).show();
-
-				}
-			}
-			break;
-			default:
-				break;
-		}
-	}
-
-
-
-
-
-
 
 	public static Bitmap bitmap;
 
@@ -171,30 +126,43 @@ public class SnapActivity extends Activity {
 	//在onCreate中判断版本号
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
-		getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-				WindowManager.LayoutParams.FLAG_FULLSCREEN);
 		setContentView(R.layout.activity_snap1);
-		//findViewById为Activity中的方法
 		bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.leaf);
 		imageView = (ImageView) findViewById(R.id.camera_view1);
 		bt_take_photo = (Button)findViewById(R.id.btn_take_pic);
 		bt_match = (Button)findViewById(R.id.btn_match);
-		Intent intent = getIntent();
-		final String imagePath = intent.getStringExtra("ImagePath");
-		imageUri = Uri.parse("file://" + imagePath);
-		try{
-			bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		imageView.setImageBitmap(bitmap);
 
+		//拍照后返回，bitmap会改变
+		if(getIntent() != null){
+			Intent intent = getIntent();
+			 imagePath = intent.getStringExtra("ImagePath");
+			imageUri = Uri.parse("file://" + imagePath);
+			try{
+				bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+
+		}
+
+		imageView.setImageBitmap(bitmap);
 		bt_take_photo.setOnClickListener(new OnClickListener() {
+
+			//先检查是否已授予权限，若未授予，先申请权限
+			//若已授予，则直接操作
 			@Override
 			public void onClick(View v) {
-				Intent intent = new Intent(SnapActivity.this, CameraActivity.class);
-				startActivity(intent);
+				if((ContextCompat.checkSelfPermission(SnapActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+						!= PackageManager.PERMISSION_GRANTED) ||
+						(ContextCompat.checkSelfPermission(SnapActivity.this, Manifest.permission.CAMERA)
+						!= PackageManager.PERMISSION_GRANTED)){
+					ActivityCompat.requestPermissions(SnapActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE,
+					Manifest.permission.CAMERA},1);
+					Log.i(TAG, "请求相机权限和存储权限");
+				}else{
+					Intent intent = new Intent(SnapActivity.this, CameraActivity.class);
+					startActivity(intent);
+				}
 
 			}
 		});
@@ -202,7 +170,7 @@ public class SnapActivity extends Activity {
 		bt_match.setOnClickListener(new OnClickListener() {
 										@Override
 										public void onClick(View v) {
-											find(imagePath);
+											find();
 										}
 									}
 
@@ -211,7 +179,31 @@ public class SnapActivity extends Activity {
 
 	}
 
-	protected void find(final String imagePath) {
+
+	@Override
+	public void onRequestPermissionsResult(int requestCode, String permissions[], int []grantResults) {
+		switch (requestCode) {
+			case 1: {
+				System.out.println("grantResults.length = " + grantResults.length);
+				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+						grantResults[1] == PackageManager.PERMISSION_GRANTED)
+				{
+					Intent intent = new Intent(SnapActivity.this, CameraActivity.class);
+					startActivity(intent);
+
+
+				} else {
+					Toast.makeText(this, "权限未开启，需手动开启",Toast.LENGTH_LONG).show();
+
+				}
+			}
+			break;
+			default:
+				break;
+		}
+	}
+
+	protected void find() {
 
 
 		if(bitmap == null){
