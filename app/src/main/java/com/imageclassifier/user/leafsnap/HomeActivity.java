@@ -10,4 +10,9 @@ public class HomeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_home);
 	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	}
 }
