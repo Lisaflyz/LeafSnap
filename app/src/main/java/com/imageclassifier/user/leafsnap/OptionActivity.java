@@ -105,7 +105,7 @@ public class OptionActivity extends BaseActivity {
 			WhoDBAdapter dbadapter = new WhoDBAdapter(getApplicationContext());
 			dbadapter.open();
 			if(
-			dbadapter.deletePlant(plants.get(position).getPid())>0){
+			dbadapter.deletePlant(plants.get(position).getPid())>0){//删除元素再初始化
 				init();
 				Toast.makeText(getApplicationContext(), "删除植物", Toast.LENGTH_SHORT).show();
 			}else{

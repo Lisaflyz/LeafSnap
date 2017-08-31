@@ -26,6 +26,7 @@ public class MyScalableView extends AppCompatImageView {
 	}
 	
 
+	//设置移动后，帧的位置
 	private void setLocation(int x, int y) {
 		this.setFrame(this.getLeft() + x, this.getTop() + y, this.getRight()
 				+ x, this.getBottom() + y);
@@ -33,12 +34,12 @@ public class MyScalableView extends AppCompatImageView {
 
 	private void setScale(float temp, int flag) {
 
-		if (flag == 0) {
+		if (flag == 0) {//当前view按照scale扩大
 			this.setFrame(this.getLeft() - (int) (temp * this.getWidth()),
 					this.getTop() - (int) (temp * this.getHeight()),
 					this.getRight() + (int) (temp * this.getWidth()),
 					this.getBottom() + (int) (temp * this.getHeight()));
-		} else {
+		} else {//当前view按照scale缩小
 			this.setFrame(this.getLeft() + (int) (temp * this.getWidth()),
 					this.getTop() + (int) (temp * this.getHeight()),
 					this.getRight() - (int) (temp * this.getWidth()),
@@ -94,9 +95,9 @@ public class MyScalableView extends AppCompatImageView {
 			if (gapLenght == 0) {
 				break;
 			}
-			if (gapLenght > 0) {
+			if (gapLenght > 0) {//扩大
 				this.setScale(scale, 0);
-			} else {
+			} else {//缩小
 				this.setScale(scale, 1);
 			}
 			beforeLenght = afterLenght;

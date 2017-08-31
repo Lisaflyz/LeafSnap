@@ -17,7 +17,7 @@ import com.imageclassifier.user.leafsnap.R;
 public class AlphaImageView extends AppCompatImageView {
 	private int alphaDeta;
 	private int curAlpha ;
-	private final int SPEED = 500;
+	private final int SPEED = 100;
 
 	Handler handler = new Handler() {
 		@SuppressWarnings("deprecation")
@@ -44,8 +44,8 @@ public class AlphaImageView extends AppCompatImageView {
 				R.styleable.AlphaImageView);
 		//在attrs中设立属性值，在java类中为属性值设置值
 		int duration = typedArray.getInt(R.styleable.AlphaImageView_myduration,
-				10000);
-		alphaDeta = 255 * SPEED / duration;
+				50);
+		alphaDeta = 255  / duration;
 
 	}
 

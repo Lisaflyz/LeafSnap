@@ -69,7 +69,7 @@ public class ChangePlantActivity extends AppCompatActivity {
 		rePhoto.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				requestPermission();
+				takePhotoDirectly();
 
 			}
 		});
@@ -114,7 +114,7 @@ public class ChangePlantActivity extends AppCompatActivity {
 			Plant plant = new Plant();
 			if (null == name.getText().toString()
 					|| name.getText().toString().equals("")) {
-				Toast.makeText(getApplicationContext(), "原来nameֲ",
+				Toast.makeText(getApplicationContext(), "植物名不能为空，未修改原有值ֲ",
 						Toast.LENGTH_SHORT).show();
 				name.requestFocus();
 				return true;
@@ -124,7 +124,7 @@ public class ChangePlantActivity extends AppCompatActivity {
 			}
 			if (null == desc.getText().toString()
 					|| desc.getText().toString().equals("")) {
-				Toast.makeText(getApplicationContext(), "修改后的name",
+				Toast.makeText(getApplicationContext(), "植物描述不能为空，未修改原有值",
 						Toast.LENGTH_SHORT).show();
 				desc.requestFocus();
 				return true;
@@ -169,44 +169,6 @@ public class ChangePlantActivity extends AppCompatActivity {
 		startActivity(intent);
 
 	}
-
-
-	public void requestPermission() {
-
-		List<String> permissionsNeeded = new ArrayList<String>();
-
-		if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)== PackageManager.PERMISSION_DENIED) {
-			permissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-		}
-		if(permissionsNeeded.size()>0){
-			System.out.println("申请权限");
-			ActivityCompat.requestPermissions(this, permissionsNeeded.toArray(new String[permissionsNeeded.size()]), 1);
-		}else{
-			takePhotoDirectly();
-		}
-	}
-
-	@Override
-	public void onRequestPermissionsResult(int requestCode, String permissions[], int []grantResults) {
-		switch (requestCode) {
-			case 1: {
-				System.out.println("grantResults.length = " + grantResults.length);
-				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-				{
-					takePhotoDirectly();
-
-
-				} else {
-					Toast.makeText(this, "权限未开启，需手动开启",Toast.LENGTH_LONG).show();
-
-				}
-			}
-			break;
-			default:
-				break;
-		}
-	}
-
 	private void takePhotoDirectly(){
 		File photoDir = new File(Environment.getExternalStorageDirectory(), "images");
 		if(!photoDir.exists()){
@@ -224,6 +186,7 @@ public class ChangePlantActivity extends AppCompatActivity {
 		startActivityForResult(takeIntent, 1);
 	}
 
+	//拍照完成后根据图片Uri得到文件，
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (resultCode == this.RESULT_OK) {
 			switch (requestCode) {

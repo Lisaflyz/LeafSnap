@@ -236,7 +236,7 @@ public class DemoActivity extends BaseActivity {
 					imageView.setImageBitmap(bitmapCurv);
 					break;
 				case R.id.btn_histograms:
-					if(Tools.rawCurvMat == null){
+					if(Tools.curvMat == null){
 						Toast.makeText(getApplicationContext(), "需先得到曲率，再进行曲率直方图处理",Toast.LENGTH_LONG).show();
 						break;
 					}
@@ -244,7 +244,7 @@ public class DemoActivity extends BaseActivity {
 					// break;
 					list.setVisibility(View.VISIBLE);
 					List<Bitmap> data = new ArrayList<Bitmap>();
-					List<Mat> histImags = Tools.getHistograms(Tools.rawCurvMat);
+					List<Mat> histImags = Tools.getHistograms(Tools.curvMat);
 
 					for (int i = 0; i < histImags.size(); i++) {
 

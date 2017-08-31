@@ -4,42 +4,43 @@ import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.LoaderCallbackInterface;
 import org.opencv.android.OpenCVLoader;
 
+import android.Manifest;
 import android.app.TabActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TabHost;
 import android.widget.RadioGroup.OnCheckedChangeListener;
+import android.widget.Toast;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends TabActivity {
 	private TabHost mTabHost;
 
 	RadioGroup radioGroup;
-
 	RadioButton rbtn_home;
 	RadioButton rbtn_browse;
-	RadioButton rbtn_collection;
 	RadioButton rbtn_option;
 	RadioButton rbtn_snap;
 
 	public static final String ACTION_PAGE_CHANGED = "action_page_changed";
 	public static final int PAGE_INDEX_HOME = 0;
 	public static final int PAGE_INDEX_BROWSE = 1;
-	public static final int PAGE_INDEX_COLLECTION = 2;
-	public static final int PAGE_INDEX_OPTION = 3;
-	public static final int PAGE_INDEX_SNAP = 4;
-	public static final int PAGE_INDEX_DEMO = 5;
+	public static final int PAGE_INDEX_OPTION = 2;
+	public static final int PAGE_INDEX_SNAP = 3;
+	public static final int PAGE_INDEX_DEMO = 4;
 	public static final String PAGE_CURRENT_KEY = "PAGE_Current_key";
 
 	public static final String HOME = "HOME";
 	public static final String BROWSE = "BROWSE";
-	public static final String COLLECTION = "COLLECTION";
 	public static final String OPTION = "OPTION";
 	public static final String SNAP = "SNAP";
 	public static final String DEMO = "DEMO";
@@ -49,10 +50,10 @@ public class MainActivity extends TabActivity {
 	private BroadcastReceiver receiver;
 
 	private int[] rbtnId = new int[] { R.id.rbtn_main_home,
-			R.id.rbtn_main_browse, R.id.rbtn_main_collection,
+			R.id.rbtn_main_browse,
 			R.id.rbtn_main_options, R.id.rbtn_main_snap ,R.id.rbtn_main_demo};
 
-	private String[] tabTag = new String[] { HOME, BROWSE, COLLECTION, OPTION,
+	private String[] tabTag = new String[] { HOME, BROWSE, OPTION,
 			SNAP ,DEMO};
 
 	//加载openCV状态的回调函数
@@ -76,6 +77,13 @@ public class MainActivity extends TabActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		if (ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+				!= PackageManager.PERMISSION_GRANTED &&
+				ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.CAMERA)
+				!= PackageManager.PERMISSION_GRANTED ) {
+			ActivityCompat.requestPermissions(MainActivity.this, new String[]{ Manifest.permission.WRITE_EXTERNAL_STORAGE ,
+			Manifest.permission.CAMERA}, 1);
+		}
 
 		init();//初始化
 
@@ -90,7 +98,21 @@ public class MainActivity extends TabActivity {
 				changeToPage(pageIndex);
 			}
 		};
-		registerReceiver(receiver, filter);//注册有IntentFilter的关闭
+		registerReceiver(receiver, filter);
+	}
+
+	public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+		switch (requestCode) {
+			case 1:
+				if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED &&
+						grantResults[1] == PackageManager.PERMISSION_GRANTED	) {
+					Toast.makeText(this,"已获取所需权限",Toast.LENGTH_LONG).show();
+				} else {
+					Toast.makeText(this, "You denied the permission", Toast.LENGTH_SHORT).show();
+				}
+				break;
+			default:
+		}
 	}
 
 	@Override
@@ -111,7 +133,6 @@ public class MainActivity extends TabActivity {
 
 		rbtn_home = (RadioButton) findViewById(R.id.rbtn_main_home);
 		rbtn_browse = (RadioButton) findViewById(R.id.rbtn_main_browse);
-		rbtn_collection = (RadioButton) findViewById(R.id.rbtn_main_collection);
 		rbtn_option = (RadioButton) findViewById(R.id.rbtn_main_options);
 		rbtn_snap = (RadioButton) findViewById(R.id.rbtn_main_snap);
 
@@ -131,10 +152,6 @@ public class MainActivity extends TabActivity {
 				.setContent(intent);
 		mTabHost.addTab(spec);
 
-		intent = new Intent().setClass(this, CollectionActivity.class);
-		spec = mTabHost.newTabSpec(COLLECTION).setIndicator(COLLECTION)
-				.setContent(intent);
-		mTabHost.addTab(spec);
 
 		intent = new Intent().setClass(this, OptionActivity.class);
 		spec = mTabHost.newTabSpec(OPTION).setIndicator(OPTION)
@@ -183,10 +200,6 @@ public class MainActivity extends TabActivity {
 		case PAGE_INDEX_BROWSE:
 			radioButton = (RadioButton) radioGroup
 					.findViewById(R.id.rbtn_main_browse);
-			break;
-		case PAGE_INDEX_COLLECTION:
-			radioButton = (RadioButton) radioGroup
-					.findViewById(R.id.rbtn_main_collection);
 			break;
 
 		case PAGE_INDEX_OPTION:

@@ -75,7 +75,7 @@ public class MyFindResultAdapter extends BaseAdapter {
 					.findViewById(R.id.tv_result_similarity);
 			mholder.time = (TextView) convertView
 					.findViewById(R.id.tv_plant_time_result);
-			convertView.setTag(mholder);
+			convertView.setTag(mholder);//缓存mholder
 			
 		}
 		

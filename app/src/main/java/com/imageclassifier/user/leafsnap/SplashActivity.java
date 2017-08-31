@@ -11,7 +11,7 @@ public class SplashActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash);
 		
-		
+		//1s后跳到MainActivity
 		new Handler().postDelayed(new Runnable(){  
             @Override  
             public void run() {  

@@ -92,7 +92,6 @@ public class MyALlPlantsOptionAdapter extends BaseAdapter {
 			String datetime = plant.getDatatime();
 			Date date = new Date(Long.valueOf(datetime));
 			mholder.time.setText(date.toString());
-			convertView.setTag(mholder);
 		}
 
 		return convertView;

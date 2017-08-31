@@ -48,14 +48,6 @@
                 android:text="@string/string_browse" />
 
             <RadioButton
-                android:id="@+id/rbtn_main_collection"
-                style="@style/myTabButton"
-                android:layout_weight="1.0"
-                android:checked="true"
-                android:drawableTop="@drawable/tab_collection"
-                android:text="@string/string_collection" />
-
-            <RadioButton
                 android:id="@+id/rbtn_main_options"
                 style="@style/myTabButton"
                 android:layout_weight="1.0"

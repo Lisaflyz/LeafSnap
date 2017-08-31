@@ -22,7 +22,6 @@ public class MyScalableActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.my_scalable_view);
 		findView();
-		config();
 
 		WindowManager.LayoutParams lp = getWindow().getAttributes();
 		lp.width = LayoutParams.MATCH_PARENT;
@@ -39,17 +38,13 @@ public class MyScalableActivity extends Activity {
 
 		if (null != url) {
 			bitmap = BitmapFactory.decodeFile(url);
+			imageView.setImageBitmap(bitmap);
 		} else {
-			bitmap = ((BitmapDrawable) (getResources()
-					.getDrawable(R.drawable.leaf))).getBitmap();
+			imageView.setImageResource(R.drawable.leaf);
 		}
 	}
 
-	private void config() {
-		imageView.setImageBitmap(bitmap);
-
-	}
-
+	//设置Activity的点击事件
 	@Override
 	public boolean onTouchEvent(MotionEvent event) {
 		if (event.getY() > imageView.getTop()

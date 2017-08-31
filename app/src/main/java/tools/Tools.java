@@ -72,21 +72,22 @@ public class Tools {
 		int nSamples = (src.width() / CN) * (src.height() / RN);
 		Log.i(TAG, "nSample = " + nSamples);
 
-		// 采集样本时纵向间隔
+		// 横向采样点数
 		int rSpace = src.width() / CN;
-		// 采集样本时横向间隔
+		//纵向采样点数
 		int cSpace = src.height() / RN;
-		// 训练样本,样本必须为单通道
+
 		final Mat samples = new Mat(rSpace * cSpace, 2, CvType.CV_32FC1);
 		// 两通道
 		samples.reshape(2);
 
-		for (int i = 0; i < rSpace; i++) {
-			for (int j = 0; j < cSpace; j++) {
+		for (int i = 0; i < cSpace; i++) {//共有cSpace行
+			for (int j = 0; j < rSpace; j++) {//每行放入rSapce个点
 				int x = j * CN;
 				int y = i * RN;
-				samples.put(i * cSpace + j, 0, new double[] {
-						hsvMat.get(x, y)[1], hsvMat.get(x, y)[2] });
+				//get(行，列)
+				samples.put(i * rSpace + j, 0, new double[] {
+						hsvMat.get(y,x)[1], hsvMat.get(y,x)[2] });
 			}
 		}
 
@@ -116,9 +117,9 @@ public class Tools {
 				preditSample.put(0, 0, new double[] { hsvMat.get(i, j)[1],
 						hsvMat.get(i, j)[2] });
 				double[] v = myEm.predict(preditSample);
-				if (v[1] == 1) {
+				if (v[1] == 1) {//为1则为黑色背景
 					dst.put(i, j, 0);
-				} else {
+				} else {//否则为白色前景
 					dst.put(i, j, 255);
 				}
 			}
@@ -126,11 +127,13 @@ public class Tools {
 
 		Log.i(TAG, "predict finish...");
 
+		//去这四个角落点作为背景点，若背景点被置为白色，则翻转矩阵
 		int x1 = (int) dst.get(0, 0)[0];
 		int x2 = (int) dst.get(0, dst.cols() - 1)[0];
 		int x3 = (int) dst.get(dst.rows() - 1, 0)[0];
 		int x4 = (int) dst.get(dst.rows() - 1, dst.cols() - 1)[0];
 
+		//短路与非短路的区别
 		if (x1 == 255 && x2 == 255 & x3 == 255 & x4 == 255) {
 			Core.bitwise_not(dst, dst);
 		}
@@ -169,9 +172,15 @@ public class Tools {
 		Imgproc.morphologyEx(DemoActivity.binaryMat, dst, Imgproc.MORPH_TOPHAT,
 				kernel);
 
+		Mat tempDst = new Mat(DemoActivity.binaryMat.rows(),DemoActivity.binaryMat.cols() ,CvType.CV_8UC1);
+		Core.absdiff(DemoActivity.binaryMat, dst, tempDst);
+
+
+		DemoActivity.binaryMat = tempDst;
+
 		Bitmap bitmap2 = Bitmap.createBitmap(DemoActivity.binaryMat.width(),
 				DemoActivity.binaryMat.height(), Config.RGB_565);
-		Utils.matToBitmap(dst, bitmap2);
+		Utils.matToBitmap(DemoActivity.binaryMat, bitmap2);
 		return bitmap2;
 	}
 
@@ -182,12 +191,14 @@ public class Tools {
 
 		List<MatOfPoint> contours = new ArrayList<MatOfPoint>();
 		Mat hierarchy = new Mat();
-		Imgproc.findContours(DemoActivity.binaryMat, contours, hierarchy,
+		Mat coutourTepMat = DemoActivity.binaryMat.clone();
+		Imgproc.findContours(coutourTepMat, contours, hierarchy,
 				Imgproc.RETR_EXTERNAL, Imgproc.CHAIN_APPROX_NONE);
 		Log.i(TAG, "*******contours size = " + contours.size());
 
 		int index = 0;
 		int maxRows = 0;
+		//取行数最大的轮廓作为叶子轮廓
 		for (int i = 0; i < contours.size(); i++) {
 			Mat mat = contours.get(i);
 			if (mat.rows() > maxRows) {
@@ -210,6 +221,7 @@ public class Tools {
 		for (int r = 0; r < curvMat.rows(); r++) {
 			List<Mat> images = new ArrayList<Mat>();
 			images.add(curvMat.row(r));
+
 			// 求曲率直方图的结果
 			Mat hist = new Mat();
 
@@ -236,14 +248,15 @@ public class Tools {
 			final int scale = 10;
 			final int ROWS = 300;
 			final int COLS = hist.rows() * scale;
+			//用于直方图展示的图片
 			Mat histImg = Mat.zeros(ROWS, COLS, CvType.CV_8UC1);
 
 			for (int i = 0; i < hist.rows(); i++) {
 
 				Core.rectangle(
 						histImg,
-						new Point(i * scale, ROWS - 1),
-						new Point((i + 1) * scale - 1, ROWS - ROWS
+						new Point(i * scale, ROWS - 1),//左下角
+						new Point((i + 1) * scale - 1, ROWS - ROWS//右上角
 								* (hist.get(i, 0)[0] - minVal)
 								/ (maxVal - minVal)), new Scalar(255, 255, 0));
 			}
@@ -254,8 +267,11 @@ public class Tools {
 		return histImags;
 	}
 
+	//得到曲率灰度图像
 	public static Mat getCurvImg(List<MatOfPoint> contours) {
-		MatOfPoint mat = contours.get(0);
+		MatOfPoint mat = contours.get(0);//存储所有的轮廓点信息，轮廓点数等于行数
+		Log.i(TAG,"mat.rows = " +  mat.rows());
+		Log.i(TAG,"mat.cols = " + mat.cols());
 
 		Mat curvMat = new Mat(MAX_RADIUS - MIN_RADIUS + 1, mat.rows(),
 				CvType.CV_32FC1);
@@ -263,12 +279,13 @@ public class Tools {
 		final int ROWS = DemoActivity.binaryMat.rows();
 		final int COLS = DemoActivity.binaryMat.cols();
 
+		//每一弧度，每一轮廓点进行该操作
 		for (int radius = MIN_RADIUS; radius <= Tools.MAX_RADIUS; radius++) {
 			for (int row = 0; row < mat.rows(); row++) {
 				double[] point = mat.get(row, 0);
 
 				// ===============================================================
-
+                //按轮廓上的点取半径
 				int row1 = (int) (point[1] - radius <= 0 ? 0 : point[1]
 						- radius);
 				int row2 = (int) (point[1] + radius >= ROWS ? ROWS - 1
@@ -297,6 +314,8 @@ public class Tools {
 		}
 
 		// =====================================================
+
+		//将弧度值归一化到0-255之间
 		Tools.rawCurvMat = curvMat;
 		Mat normlizedMat = new Mat();
 		Core.normalize(curvMat, normlizedMat, 0, 255, Core.NORM_MINMAX);
@@ -352,14 +371,17 @@ public class Tools {
 
 	}
 
+	//直方图的值归一化到0-1之间，并合并成一个Mat
 	public static Mat histgramsToOne(List<Mat> list) {
 		Mat mat = list.get(0);
+		Log.i(TAG, "beginToOne  mat.rows() = " + mat.rows() + " mat.cols() = " + mat.cols());
 		Core.normalize(mat, mat, 1, 0, Core.NORM_L1);
 		for (int i = 1; i < list.size(); i++) {
 			Mat temp = list.get(i);
 			Core.normalize(temp, temp, 1, 0, Core.NORM_L1);
 			mat.push_back(temp);
 		}
+		Log.i(TAG, "endToOne  mat.rows() = " + mat.rows() + " mat.cols() = " + mat.cols());
 		return mat;
 
 	}
@@ -367,15 +389,9 @@ public class Tools {
 	public static StringBuffer histGramsToString(List<Mat> list) {
 
 		StringBuffer sb = new StringBuffer();
-		/*
-		 * for (int i = 0; i < list.size(); i++) { Mat mat = list.get(i);
-		 * Core.normalize(mat, mat, 1, 0, Core.NORM_L1); double sum = 0; for
-		 * (int j = 0; j < mat.rows(); j++) { double[] val = mat.get(j, 0); sum
-		 * += val[0]; sb = sb.append(val[0] + ","); } Log.i(TAG, "sum:" + sum);
-		 * }
-		 */
 
 		Mat mat = histgramsToOne(list);
+		Log.i(TAG, "mat.rows() mat.cols() = " + mat.rows() + "   " + mat.cols());
 		for (int i = 0; i < mat.rows(); i++) {
 			double[] vals = mat.get(i, 0);
 			sb.append(vals[0] + ",");
@@ -400,8 +416,8 @@ public class Tools {
 		Mat mat = new MatOfDouble(histVals);
 		//
 		// Log.i(TAG, "hist mat channels:" + mat.channels());
-		// Log.i(TAG, "hist mat width:" + mat.width());
-		// Log.i(TAG, "hist mat heigth:" + mat.height());
+		 Log.i(TAG, "hist mat width:" + mat.width());
+		 Log.i(TAG, "hist mat heigth:" + mat.height());
 		// Log.i(TAG, "hist mat depth:" + mat.depth());
 
 		return mat;
@@ -423,6 +439,7 @@ public class Tools {
 			return null;
 		}
 		Mat src1 = histgramsToOne(listHists);
+		Log.i(TAG, "合并后的矩阵大小 rows, cols = " + src1.rows() + src1.cols() );
 		Log.i(TAG, "*******plantsLists size = " + plantLists.size());
 		src1.convertTo(src1, CvType.CV_32FC1);
 
@@ -437,6 +454,7 @@ public class Tools {
 			if (linkedList.isEmpty()) {
 				linkedList.add(0, plant);
 			} else {
+				//匹配程度越大越像
 				int j = 0;
 				for (j = 0; j < linkedList.size(); j++) {
 					if (linkedList.get(j).getVal() <= val) {
